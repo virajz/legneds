@@ -13,7 +13,7 @@ export default function DailyReward() {
     };
 
     return (
-        <div className="mt-6 p-3 rounded-xl bg-gray-900 border border-gray-700 text-sm flex justify-between items-center">
+        <div className="p-3 rounded-xl bg-gray-900 border border-gray-700 text-sm flex justify-between items-center">
             <div className="flex items-center gap-2 text-white">
                 <Gift className="w-4 h-4 text-yellow-400" />
                 {hasClaimed ? (

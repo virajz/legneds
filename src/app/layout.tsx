@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html lang="en" className={geologica.className}>
             <body className="bg-black text-white flex justify-center">
-                <div className="w-full max-w-sm min-h-screen flex flex-col pb-16">
+                <div className="w-full max-w-lg min-h-screen flex flex-col pb-16">
                     {children}
                     <Toaster
                         richColors

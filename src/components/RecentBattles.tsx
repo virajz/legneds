@@ -18,7 +18,7 @@ const mockHistory: BattleResult[] = [
 
 export default function RecentBattles() {
     return (
-        <div className="mt-6 flex-1">
+        <div className="flex-1">
             <h2 className="text-white text-lg font-semibold mb-2">Recent Battles</h2>
 
             <div className="rounded-xl border border-gray-700 max-h-80 bg-gray-900 overflow-y-auto divide-y divide-gray-800">

@@ -1,51 +1,83 @@
 "use client";
 
-import { useState } from "react";
-import CardItem from "@/components/CardItem";
 import { sampleCards } from "@/data/sampleCards";
-import { Card } from "@/types/card";
+import CardItem from "@/components/CardItem";
+import { useMemo, useState } from "react";
+import { Card, Rarity } from "@/types/card";
 
 export default function CollectionPage() {
-    const [cards, setCards] = useState<Card[]>(sampleCards);
-    const maxDeckSize = 5;
-    const deckCount = cards.filter((card) => card.inDeck).length;
+    const [deck, setDeck] = useState<Card[]>(sampleCards.filter((c) => c.inDeck));
+    const [search, setSearch] = useState("");
+    const [rarityFilter, setRarityFilter] = useState<Rarity | "all">("all");
 
-    const handleToggleDeck = (cardId: string) => {
-        setCards((prev) =>
-            prev.map((card) => {
-                if (card.id !== cardId) return card;
-
-                if (card.inDeck) {
-                    return { ...card, inDeck: false };
-                } else if (deckCount < maxDeckSize) {
-                    return { ...card, inDeck: true };
-                } else {
-                    return card;
-                }
-            })
-        );
+    const toggleCardInDeck = (id: string) => {
+        const index = deck.findIndex((c) => c.id === id);
+        if (index >= 0) {
+            setDeck(deck.filter((c) => c.id !== id));
+        } else if (deck.length < 5) {
+            const card = sampleCards.find((c) => c.id === id);
+            if (card) setDeck([...deck, card]);
+        }
     };
 
-    return (
-        <div className="flex flex-col h-[100dvh] overflow-hidden">
-            <header className="px-4 pt-4 pb-2 bg-black">
-                <h1 className="text-xl font-display font-semibold text-center mb-1">
-                    My Card Collection
-                </h1>
-                <p className="text-center text-sm text-gray-400">
-                    Deck: {deckCount} / {maxDeckSize}
-                </p>
-            </header>
+    const cardsWithDeckStatus = useMemo(
+        () =>
+            sampleCards.map((card) => ({
+                ...card,
+                inDeck: deck.some((deckCard) => deckCard.id === card.id),
+            })),
+        [deck]
+    );
 
-            <div className="flex-1 overflow-y-auto px-4 pb-20 space-y-4 bg-black">
-                {cards.map((card) => (
+    const filtered = cardsWithDeckStatus.filter((card) => {
+        const matchesSearch = card.name.toLowerCase().includes(search.toLowerCase());
+        const matchesRarity = rarityFilter === "all" || card.rarity === rarityFilter;
+        return matchesSearch && matchesRarity;
+    });
+
+    return (
+        <div className="p-4 space-y-4">
+            <h1 className="text-xl font-display font-bold text-center">My Card Collection</h1>
+            <p className="text-center text-gray-400 text-sm">Deck: {deck.length} / 5</p>
+
+            {/* Filters */}
+            <div className="flex gap-2 items-center">
+                <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search by name"
+                    className="flex-1 px-3 py-2 text-sm bg-gray-800 border border-gray-600 rounded-md text-white"
+                />
+                <select
+                    value={rarityFilter}
+                    onChange={(e) => setRarityFilter(e.target.value as Rarity | "all")}
+                    className="px-2 py-2 text-sm bg-gray-800 border border-gray-600 rounded-md text-white"
+                >
+                    <option value="all">All</option>
+                    <option value="common">Common</option>
+                    <option value="uncommon">Uncommon</option>
+                    <option value="rare">Rare</option>
+                    <option value="epic">Epic</option>
+                    <option value="legendary">Legendary</option>
+                    <option value="mythic">Mythic</option>
+                </select>
+            </div>
+
+            {/* Cards */}
+            <div className="space-y-6 pt-8 overflow-y-auto max-h-[calc(100vh-240px)] pb-24">
+                {filtered.map((card) => (
                     <CardItem
                         key={card.id}
                         card={card}
-                        onToggleDeck={handleToggleDeck}
-                        deckFull={deckCount >= maxDeckSize && !card.inDeck}
+                        onToggleDeck={toggleCardInDeck}
+                        deckFull={deck.length >= 5}
                     />
                 ))}
+
+                {filtered.length === 0 && (
+                    <p className="text-center text-gray-500">No cards match your search.</p>
+                )}
             </div>
         </div>
     );

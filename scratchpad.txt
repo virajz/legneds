@@ -1,0 +1,6 @@
+Common: 10 - 30 | max level: 10
+uncommon: 20 - 45 | max level: 15
+rare: 30 - 60 | | max level: 20
+epic: 40 - 85 | max level: 30
+legendary: 60 - 110 | | max level: 40
+mythic: 80 - 185 | max level: 50
